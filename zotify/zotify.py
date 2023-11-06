@@ -33,6 +33,8 @@ class Zotify:
                 return
             except RuntimeError:
                 pass
+        if Config.get_skip_login:
+        	return
         while True:
             user_name = args.username if args.username else ''
             while len(user_name) == 0:

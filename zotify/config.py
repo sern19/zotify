@@ -36,8 +36,10 @@ PRINT_WARNINGS = 'PRINT_WARNINGS'
 RETRY_ATTEMPTS = 'RETRY_ATTEMPTS'
 CONFIG_VERSION = 'CONFIG_VERSION'
 DOWNLOAD_LYRICS = 'DOWNLOAD_LYRICS'
+SKIP_LOGIN = 'SKIP_LOGIN'
 
 CONFIG_VALUES = {
+	SKIP_LOGIN:                 { 'default': 'False', 'type': bool, 'arg': '--skip-login'                 },
     SAVE_CREDENTIALS:           { 'default': 'True',  'type': bool, 'arg': '--save-credentials'           },
     CREDENTIALS_LOCATION:       { 'default': '',      'type': str,  'arg': '--credentials-location'       },
     OUTPUT:                     { 'default': '',      'type': str,  'arg': '--output'                     },
@@ -233,6 +235,10 @@ class Config:
             song_archive = PurePath(Path(cls.get(SONG_ARCHIVE)).expanduser())
         Path(song_archive.parent).mkdir(parents=True, exist_ok=True)
         return song_archive
+
+    @classmethod
+    def get_skip_login(cls) -> bool:
+        return cls.get(SKIP_LOGIN)
 
     @classmethod
     def get_save_credentials(cls) -> bool:
