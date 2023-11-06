@@ -36,6 +36,8 @@ ITEMS = 'items'
 
 NAME = 'name'
 
+ADDED_AT = 'added_at'
+
 HREF = 'href'
 
 ID = 'id'

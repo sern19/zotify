@@ -4,7 +4,7 @@ from pathlib import Path
 
 from zotify.album import download_album, download_artist_albums
 from zotify.const import TRACK, NAME, ID, ARTIST, ARTISTS, ITEMS, TRACKS, EXPLICIT, ALBUM, ALBUMS, \
-    OWNER, PLAYLIST, PLAYLISTS, DISPLAY_NAME, TYPE
+    OWNER, PLAYLIST, PLAYLISTS, DISPLAY_NAME, TYPE, ADDED_AT
 from zotify.loader import Loader
 from zotify.playlist import get_playlist_songs, get_playlist_info, download_from_user_playlist, download_playlist
 from zotify.podcast import download_episode, get_show_episodes
@@ -114,6 +114,7 @@ def download_from_urls(urls: list[str]) -> bool:
                         download_track('playlist', song[TRACK][ID], extra_keys=
                         {
                             'playlist_song_name': song[TRACK][NAME],
+                            'playlist_added_at': song[ADDED_AT],
                             'playlist': name,
                             'playlist_num': str(enum).zfill(char_num),
                             'playlist_id': playlist_id,

@@ -103,21 +103,22 @@ To log out, just remove the configuration file. Uninstalling Zotify does not rem
 With the option `OUTPUT` (or the commandline parameter `--output`) you can specify the output location and format.  
 The value is relative to the `ROOT_PATH`/`ROOT_PODCAST_PATH` directory and can contain the following placeholder:
 
-| Placeholder     | Description
-|-----------------|--------------------------------
-| {artist}        | The song artist
-| {album}         | The song album
-| {song_name}     | The song name
-| {release_year}  | The song release year
-| {disc_number}   | The disc number
-| {track_number}  | The track_number
-| {id}            | The song id
-| {track_id}      | The track id
-| {ext}           | The file extension
-| {album_id}      | (only when downloading albums) ID of the album
-| {album_num}     | (only when downloading albums) Incrementing track number
-| {playlist}      | (only when downloading playlists) Name of the playlist 
-| {playlist_num}  | (only when downloading playlists) Incrementing track number
+| Placeholder          | Description
+|----------------------|--------------------------------
+| {artist}             | The song artist
+| {album}              | The song album
+| {song_name}          | The song name
+| {release_year}       | The song release year
+| {disc_number}        | The disc number
+| {track_number}       | The track_number
+| {id}                 | The song id
+| {track_id}           | The track id
+| {ext}                | The file extension
+| {album_id}           | (only when downloading albums) ID of the album
+| {album_num}          | (only when downloading albums) Incrementing track number
+| {playlist}           | (only when downloading playlists) Name of the playlist 
+| {playlist_added_at_} | (only when downloading playlists) Date and time when track was added (yyyy-MM-ddTHH_mm_ssZ)
+| {playlist_num}       | (only when downloading playlists) Incrementing track number
 
 Example values could be:
 ~~~~

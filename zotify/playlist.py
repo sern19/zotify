@@ -1,4 +1,4 @@
-from zotify.const import ITEMS, ID, TRACK, NAME
+from zotify.const import ITEMS, ID, TRACK, NAME, ADDED_AT
 from zotify.termoutput import Printer
 from zotify.track import download_track
 from zotify.utils import split_input
@@ -53,7 +53,7 @@ def download_playlist(playlist):
     p_bar = Printer.progress(playlist_songs, unit='song', total=len(playlist_songs), unit_scale=True)
     enum = 1
     for song in p_bar:
-        download_track('extplaylist', song[TRACK][ID], extra_keys={'playlist': playlist[NAME], 'playlist_num': str(enum).zfill(2)}, disable_progressbar=True)
+        download_track('extplaylist', song[TRACK][ID], extra_keys={'playlist': playlist[NAME], 'playlist_added_at': song[ADDED_AT], 'playlist_num': str(enum).zfill(2)}, disable_progressbar=True)
         p_bar.set_description(song[TRACK][NAME])
         enum += 1
 
