@@ -1,6 +1,6 @@
-from zotify.const import ITEMS, ID, TRACK, NAME, ADDED_AT
-from zotify.termoutput import Printer
-from zotify.track import download_track
+from zotify.const import ITEMS, ID, TRACK, NAME, ADDED_AT, ARTISTS, ALBUM
+from zotify.termoutput import Printer, PrintChannel
+from zotify.track import download_track, save_missing_song
 from zotify.utils import split_input
 from zotify.zotify import Zotify
 
@@ -52,9 +52,24 @@ def download_playlist(playlist):
     playlist_songs = [song for song in get_playlist_songs(playlist[ID]) if song[TRACK][ID]]
     p_bar = Printer.progress(playlist_songs, unit='song', total=len(playlist_songs), unit_scale=True)
     enum = 1
+    char_num = len(str(len(playlist_songs)))
     for song in p_bar:
-        download_track('extplaylist', song[TRACK][ID], extra_keys={'playlist': playlist[NAME], 'playlist_added_at': song[ADDED_AT], 'playlist_num': str(enum).zfill(2)}, disable_progressbar=True)
-        p_bar.set_description(song[TRACK][NAME])
+        if song[TRACK][ID]:
+            download_track('extplaylist', song[TRACK][ID], extra_keys={'playlist': playlist[NAME], 'playlist_added_at': song[ADDED_AT], 'playlist_num': str(enum).zfill(2)}, disable_progressbar=True)
+            p_bar.set_description(song[TRACK][NAME])
+        elif song[TRACK][NAME]:
+            Printer.print(PrintChannel.SKIPS, '###   SKIPPING:  SONG DOES NOT EXIST ANYMORE (INFO SAVED)   ###' + "\n")
+            save_missing_song('playlist', song[TRACK][NAME], song[TRACK][ARTISTS][0][NAME], song[TRACK][ALBUM][NAME], extra_keys=
+            {
+                'playlist_song_name': song[TRACK][NAME],
+                'playlist_added_at': song[ADDED_AT],
+                'playlist': playlist[NAME],
+                'playlist_num': str(enum).zfill(char_num),
+                'playlist_id': playlist[ID],
+                'playlist_track_id': ""
+            })
+        else:
+            Printer.print(PrintChannel.SKIPS, '###   SKIPPING:  SONG DOES NOT EXIST ANYMORE (INFO SAVED)   ###' + "\n")
         enum += 1
 
 

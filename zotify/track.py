@@ -8,9 +8,11 @@ from typing import Any, Tuple, List
 from librespot.metadata import TrackId
 import ffmpy
 
-from zotify.const import TRACKS, ALBUM, GENRES, NAME, ITEMS, DISC_NUMBER, TRACK_NUMBER, IS_PLAYABLE, ARTISTS, IMAGES, URL, \
-    RELEASE_DATE, ID, TRACKS_URL, FOLLOWED_ARTISTS_URL, SAVED_TRACKS_URL, TRACK_STATS_URL, CODEC_MAP, EXT_MAP, DURATION_MS, \
-    HREF, ARTISTS, WIDTH
+from zotify.const import TRACKS, ALBUM, GENRES, NAME, ITEMS, DISC_NUMBER, TRACK_NUMBER, IS_PLAYABLE, IMAGES, \
+    URL, \
+    RELEASE_DATE, ID, TRACKS_URL, FOLLOWED_ARTISTS_URL, SAVED_TRACKS_URL, TRACK_STATS_URL, CODEC_MAP, EXT_MAP, \
+    DURATION_MS, \
+    HREF, ARTISTS, WIDTH, ARTIST
 from zotify.termoutput import Printer, PrintChannel
 from zotify.utils import fix_filename, set_audio_tags, set_music_thumbnail, create_download_directory, \
     get_directory_song_ids, add_to_directory_song_ids, get_previously_downloaded, add_to_archive, fmt_seconds
@@ -207,7 +209,8 @@ def download_track(mode: str, track_id: str, extra_keys=None, disable_progressba
         try:
             if not is_playable:
                 prepare_download_loader.stop()
-                Printer.print(PrintChannel.SKIPS, '\n###   SKIPPING: ' + song_name + ' (SONG IS UNAVAILABLE)   ###' + "\n")
+                Printer.print(PrintChannel.SKIPS, '\n###   SKIPPING: ' + song_name + ' (SONG IS UNAVAILABLE) (INFO SAVED)  ###' + "\n")
+                save_missing_song(mode, name, artists[0], album_name, extra_keys)
             else:
                 if check_id and check_name and Zotify.CONFIG.get_skip_existing():
                     prepare_download_loader.stop()
@@ -292,8 +295,38 @@ def download_track(mode: str, track_id: str, extra_keys=None, disable_progressba
             Printer.print(PrintChannel.ERRORS, "".join(traceback.TracebackException.from_exception(e).format()) + "\n")
             if Path(filename_temp).exists():
                 Path(filename_temp).unlink()
+            save_missing_song(mode, name, artists[0], album_name, extra_keys)
 
     prepare_download_loader.stop()
+
+
+def save_missing_song(mode: str, songName: str, artistName: str, albumName: str, extra_keys=None) -> None:
+    """ Writes a stub file informing about missing song """
+
+    if extra_keys is None:
+        extra_keys = {}
+
+    output_template = Zotify.CONFIG.get_output(mode)
+
+    for k in extra_keys:
+        output_template = output_template.replace("{" + k + "}", fix_filename(extra_keys[k]))
+
+    ext = EXT_MAP.get(Zotify.CONFIG.get_download_format().lower())
+
+    output_template = output_template.replace("{artist}", fix_filename(artistName))
+    output_template = output_template.replace("{album}", fix_filename(albumName))
+    output_template = output_template.replace("{song_name}", fix_filename(songName))
+    output_template = output_template.replace("{release_year}", "")
+    output_template = output_template.replace("{disc_number}", "")
+    output_template = output_template.replace("{track_number}", "")
+    output_template = output_template.replace("{id}", "")
+    output_template = output_template.replace("{track_id}", "")
+    output_template = output_template.replace("{ext}", "mss")
+
+    filename = PurePath(Zotify.CONFIG.get_root_path()).joinpath(output_template)
+
+    with open(PurePath(filename), 'w') as fp:
+        pass
 
 
 def convert_audio_format(filename) -> None:

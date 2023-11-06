@@ -9,7 +9,7 @@ from zotify.loader import Loader
 from zotify.playlist import get_playlist_songs, get_playlist_info, download_from_user_playlist, download_playlist
 from zotify.podcast import download_episode, get_show_episodes
 from zotify.termoutput import Printer, PrintChannel
-from zotify.track import download_track, get_saved_tracks, get_followed_artists
+from zotify.track import download_track, get_saved_tracks, get_followed_artists, save_missing_song
 from zotify.utils import splash, split_input, regex_input_for_urls
 from zotify.zotify import Zotify
 
@@ -105,8 +105,21 @@ def download_from_urls(urls: list[str]) -> bool:
             enum = 1
             char_num = len(str(len(playlist_songs)))
             for song in playlist_songs:
-                if not song[TRACK][NAME] or not song[TRACK][ID]:
+                if not song[TRACK][NAME]:
                     Printer.print(PrintChannel.SKIPS, '###   SKIPPING:  SONG DOES NOT EXIST ANYMORE   ###' + "\n")
+                    enum += 1
+                elif not song[TRACK][ID]:
+                    Printer.print(PrintChannel.SKIPS, '###   SKIPPING:  SONG DOES NOT EXIST ANYMORE (INFO SAVED)   ###' + "\n")
+                    save_missing_song('playlist', song[TRACK][NAME], song[TRACK][ARTISTS][0][NAME], song[TRACK][ALBUM][NAME], extra_keys=
+                        {
+                            'playlist_song_name': song[TRACK][NAME],
+                            'playlist_added_at': song[ADDED_AT],
+                            'playlist': name,
+                            'playlist_num': str(enum).zfill(char_num),
+                            'playlist_id': playlist_id,
+                            'playlist_track_id': ""
+                        })
+                    enum += 1
                 else:
                     if song[TRACK][TYPE] == "episode": # Playlist item is a podcast episode
                         download_episode(song[TRACK][ID])
