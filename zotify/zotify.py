@@ -26,6 +26,9 @@ class Zotify:
 
         cred_location = Config.get_credentials_location()
 
+        if Config.get_skip_login():
+            return
+
         if Path(cred_location).is_file():
             try:
                 conf = Session.Configuration.Builder().set_store_credentials(False).build()
@@ -33,8 +36,6 @@ class Zotify:
                 return
             except RuntimeError:
                 pass
-        if Config.get_skip_login:
-        	return
         while True:
             user_name = args.username if args.username else ''
             while len(user_name) == 0:
@@ -82,7 +83,13 @@ class Zotify:
     def invoke_url_with_params(cls, url, limit, offset, **kwargs):
         headers, params = cls.get_auth_header_and_params(limit=limit, offset=offset)
         params.update(kwargs)
-        return requests.get(url, headers=headers, params=params).json()
+        response = requests.get(url, headers=headers, params=params)
+        try:
+            responsejson = response.json()
+        except json.decoder.JSONDecodeError:
+            responsejson = {"error": {"status": "unknown", "message": "received an empty response"}}
+            print('ERROR WHEN PARSING RESPONSE - \'' + response.text + '\'')
+        return responsejson
 
     @classmethod
     def invoke_url(cls, url, tryCount=0):
