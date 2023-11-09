@@ -232,6 +232,8 @@ def download_track(mode: str, track_id: str, extra_keys=None, disable_progressba
 
                     time_start = time.time()
                     downloaded = 0
+                    last_downloaded = 0
+                    retries = 0
                     with open(filename_temp, 'wb') as file, Printer.progress(
                             desc=song_name,
                             total=total_size,
@@ -246,6 +248,18 @@ def download_track(mode: str, track_id: str, extra_keys=None, disable_progressba
                             data = stream.input_stream.stream().read(Zotify.CONFIG.get_chunk_size())
                             p_bar.update(file.write(data))
                             downloaded += len(data)
+
+                            if downloaded == last_downloaded:
+                                retries += 1
+                            else:
+                                retries = 0
+                            last_downloaded = downloaded
+
+                            if retries > Zotify.CONFIG.get_retry_attempts():
+                                Printer.print(PrintChannel.ERRORS, '###   SKIPPING: ' + song_name + ' (GENERAL DOWNLOAD ERROR)   ###')
+                                save_missing_song(mode, name, artists[0], album_name, extra_keys)
+                                return
+
                             b += 1 if data == b'' else 0
                             if Zotify.CONFIG.get_download_real_time():
                                 delta_real = time.time() - time_start
