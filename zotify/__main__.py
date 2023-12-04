@@ -6,6 +6,7 @@ It's like youtube-dl, but for that other music platform.
 """
 
 import argparse
+import sys
 
 from zotify.app import client
 from zotify.config import CONFIG_VALUES
@@ -61,7 +62,10 @@ def main():
     parser.set_defaults(func=client)
 
     args = parser.parse_args()
-    args.func(args)
+    try:
+        args.func(args)
+    except:
+        sys.exit(1)
 
 
 if __name__ == '__main__':

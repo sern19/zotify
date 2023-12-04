@@ -30,7 +30,7 @@ Dependencies:
 
 Installation:
 
-python -m pip install git+https://zotify.xyz/zotify/zotify.git
+python -m pip install git+https://github.com/sern19/zotify.git
 ```
 
 See [INSTALLATION](INSTALLATION.md) for a more detailed and opinionated installation walkthrough.
