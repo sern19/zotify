@@ -44,7 +44,7 @@ def get_followed_artists() -> list:
     resp = Zotify.invoke_url(FOLLOWED_ARTISTS_URL)[1]
     for artist in resp[ARTISTS][ITEMS]:
         artists.append(artist[ID])
-    
+
     return artists
 
 
@@ -284,6 +284,8 @@ def download_track(mode: str, track_id: str, extra_keys=None, disable_progressba
                         Printer.print(PrintChannel.ERRORS, "Unable to write metadata, ensure ffmpeg is installed and added to your PATH.")
 
                     if filename_temp != filename:
+                        if Path(filename).exists():
+                            Path(filename).unlink()
                         Path(filename_temp).rename(filename)
 
                     time_finished = time.time()
