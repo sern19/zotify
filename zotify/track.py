@@ -1,3 +1,5 @@
+import os
+import shutil
 from pathlib import Path, PurePath
 import math
 import re
@@ -285,8 +287,9 @@ def download_track(mode: str, track_id: str, extra_keys=None, disable_progressba
 
                     if filename_temp != filename:
                         if Path(filename).exists():
-                            Path(filename).unlink()
-                        Path(filename_temp).rename(filename)
+                            os.remove(filename)
+                        shutil.copy(filename_temp, filename)
+                        os.remove(filename_temp)
 
                     time_finished = time.time()
 
